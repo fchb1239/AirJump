@@ -6,7 +6,7 @@ Gorilla Tag Modding Discord https://discord.gg/monkemod
 But now I have decided to set up a GitHub for it and make it open source.
 If you mod this to be able to use this in public lobbies your a cringe monke.
 
-#How 2 AirJump:
+# How 2 AirJump:
 - Be in a private lobby
 - Use grip buttons to spawn in block underneath hands
 - Jump off platform to be monke
