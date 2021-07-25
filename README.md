@@ -5,6 +5,8 @@ Yeah that's it lol, how to use:
 1. Press grip buttons to make platforms
 2. ... that's it
 
+![github](https://github.com/fchb1239/AirJump/blob/main/GitHubVisuals/networked_airjump_2.gif?raw=true)
+
 # Updates
 FIRST UPDATE OF AIRJUMP!
 The GitHub and Networking Edition!
@@ -13,4 +15,4 @@ NEW FEATURES:
 2. NETWORKING!!!! Finally you can see your friends cub- I mean platforms, with this you can build houses and mess around. Trust me, best update ever... wait also worst since it's the first, hmm.
 I am so happy with the recent support for AirJump, means a lot :)
 
-![github](https://github.com/fchb1239/AirJump/blob/main/GitHubVisuals/networked_airjump_2.gif?raw=true)
+
