@@ -12,3 +12,5 @@ NEW FEATURES:
 1. GitHub meaning it's open source!
 2. NETWORKING!!!! Finally you can see your friends cub- I mean platforms, with this you can build houses and mess around. Trust me, best update ever... wait also worst since it's the first, hmm.
 I am so happy with the recent support for AirJump, means a lot :)
+
+https://github.com/fchb1239/AirJump/blob/main/GitHubVisuals/networked_airjump_2.gif
