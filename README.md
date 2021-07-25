@@ -1,12 +1,14 @@
 # AirJump
-A funnie mod for Gorilla Tag
-that makes platforms underneath your hands that you can jump off.
-This is a mod originally published in
-Gorilla Tag Modding Discord https://discord.gg/monkemod
-But now I have decided to set up a GitHub for it and make it open source.
-If you mod this to be able to use this in public lobbies your a cringe monke.
+AirJump is a mod that lets you spawn paltforms underneeth your hands.
+Quick disclamer: If you are making a networked mod DO NOT use the values 69, 70, 71, 72. These will mess with the AirJump mod a lot and idk but MIGHT crash it, if I find out that people are doing this I may have to remove networking.
+Yeah that's it lol, how to use:
+1. Press grip buttons to make platforms
+2. ... that's it
 
-# How 2 AirJump:
-- Be in a private lobby
-- Use grip buttons to spawn in block underneath hands
-- Jump off platform to be monke
+# Updates
+FIRST UPDATE OF AIRJUMP!
+The GitHub and Networking Edition!
+NEW FEATURES:
+1. GitHub meaning it's open source!
+2. NETWORKING!!!! Finally you can see your friends cub- I mean platforms, with this you can build houses and mess around. Trust me, best update ever... wait also worst since it's the first, hmm.
+I am so happy with the recent support for AirJump, means a lot :)
