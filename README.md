@@ -13,7 +13,7 @@ Oh hey look at that, the first update....
 GitHub and Networking? Edition :O
 NEW FEATURES:
 * GitHub meaning it's open source!
-* NETWORKING!!!! Finally you can see(and jump off) your friends cub- I mean platforms, with this you can build houses and mess around. Very fun :)
+* NETWORKING!!!! Finally you can see(and jump off) your friends boxes, with this you can build houses and mess around. Very fun :)
 * AirJump is now WAY more optimized... I think
 * Fixed bug spamming errors in the console.
 
