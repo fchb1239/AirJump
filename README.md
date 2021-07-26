@@ -1,10 +1,8 @@
-# AirJump
+# AirJump # [Download](https://www.youtube.com/watch?v=yPYZpwSpKmA)
 AirJump is a mod that lets you spawn platforms underneeth your hands.
 How to use:
 1. Press grip buttons to make platforms
 2. ... that's it
-
-# [Download](https://www.youtube.com/watch?v=yPYZpwSpKmA)
 
 ![](AirJump/Gifs/networked_airjump_2.gif)
 
