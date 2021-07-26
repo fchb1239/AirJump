@@ -9,7 +9,7 @@ How to use:
 ![](AirJump/Gifs/networked_airjump_2.gif)
 
 # Updates
-Oh, hey look at that the first update....
+Oh hey look at that, the first update....
 GitHub and Networking? Edition :O
 NEW FEATURES:
 * GitHub meaning it's open source!
