@@ -8,8 +8,8 @@ Yeah that's it lol, how to use:
 ![github](https://github.com/fchb1239/AirJump/blob/main/GitHubVisuals/networked_airjump_2.gif?raw=true)
 
 # Updates
-FIRST UPDATE OF AIRJUMP!
+Oh, hey look at that the first update....
 The GitHub and Networking Edition!
 NEW FEATURES:
 1. GitHub meaning it's open source!
-2. NETWORKING!!!! Finally you can see your friends cub- I mean platforms, with this you can build houses and mess around. Trust me, best update ever... wait also worst since it's the first, hmm.
+2. NETWORKING!!!! Finally you can see(and jump off) your friends cub- I mean platforms, with this you can build houses and mess around. Trust me, best update ever... wait also worst since it's the first, hmm.
