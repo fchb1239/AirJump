@@ -5,7 +5,7 @@ Yeah that's it lol, how to use:
 1. Press grip buttons to make platforms
 2. ... that's it
 
-![github](https://github.com/fchb1239/AirJump/blob/main/GitHubVisuals/networked_airjump_2.gif?raw=true)
+![](GitHubVisuals/networked_airjump_2.gif)
 
 # Updates
 Oh, hey look at that the first update....
