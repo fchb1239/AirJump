@@ -8,7 +8,7 @@ How to use:
 
 # Updates
 Oh, hey look at that the first update....
-The GitHub and Networking Edition!
+GitHub and Networking? Edition :O
 NEW FEATURES:
 1. GitHub meaning it's open source!
 2. NETWORKING!!!! Finally you can see(and jump off) your friends cub- I mean platforms, with this you can build houses and mess around. Trust me, best update ever... wait also worst since it's the first, hmm.
