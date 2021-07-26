@@ -4,7 +4,7 @@ How to use:
 1. Press grip buttons to make platforms
 2. ... that's it
 
-[Download](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+# [Download](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
 ![](GitHubVisuals/networked_airjump_2.gif)
 
