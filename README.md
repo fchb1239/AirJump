@@ -6,7 +6,7 @@ How to use:
 
 # [Download](https://www.youtube.com/watch?v=yPYZpwSpKmA)
 
-![](AirJump/Gifs/networked_airjump_2.gif)
+![](Gifs/networked_airjump_2.gif)
 
 # Updates
 Oh hey look at that, the first update....
