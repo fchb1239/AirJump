@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "NKVoURS6K9NB459LcVZgWHxtLyRb3R3coYadOn2f4xwBZFT/54fnVB+F7wE1zn8B+DtLIso9jYrWcDqAPMGXgw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\fchb1\\source\\repos\\AirJump\\AirJump\\AirJump.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\fchb1\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\fchb1\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
