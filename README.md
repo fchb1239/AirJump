@@ -10,14 +10,12 @@ How to use:
 
 # Updates
 Oh hey look at that, the first update....
-GitHub and Networking? Edition :O
 NEW FEATURES:
 * GitHub meaning it's open source!
 * NETWORKING!!!! Finally you can see(and jump off) your friends boxes, with this you can build houses and mess around. Very fun :)
-* AirJump is now WAY more optimized... I think.
 * Fixed bug spamming errors in the console.
 * Fixed bug where if you kept holding grip while going into a public lobby the platform would stay.
-* Other minor tweaks that should make the experience better for everyone :>
+* Other minor tweaks that should make the experience a little better.
 
 
 
