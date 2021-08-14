@@ -9,8 +9,7 @@ How to use:
 ![](Gifs/networked_airjump_2.gif)
 
 # Updates
-Oh hey look at that, the first update....
-NEW FEATURES:
+Update 1: Networking and GitHub
 * GitHub meaning it's open source!
 * NETWORKING!!!! Finally you can see(and jump off) your friends boxes, with this you can build houses and mess around. Very fun :)
 * Fixed bug spamming errors in the console.
