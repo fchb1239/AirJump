@@ -1,5 +1,5 @@
 # AirJump
-AirJump is a mod that lets you spawn platforms underneeth your hands.
+AirJump is a mod that lets you spawn cubes underneeth your hands.
 How to use:
 1. Press grip buttons to make cube
 2. ... that's it
