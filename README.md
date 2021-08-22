@@ -12,7 +12,7 @@ How to use:
 
 # Updates
 Networking and GitHub:
-* AirJump Official Oculus Quest Port.
+* AirJump official Oculus Quest port.
 * GitHub meaning it's open source.
 * NETWORKING! Finally you can see(and jump off) your friends boxes, with this you can build houses and mess around. Very fun :)
 * Fixed bug spamming errors in the console.
