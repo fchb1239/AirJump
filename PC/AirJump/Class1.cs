@@ -1,4 +1,4 @@
-﻿//WARNING: THIS CODE IS WORSE THAN YANDERE SIMULATOR CODE! DON'T READ THIS TO LEARN ANYTHING, IT'S BAD!
+//WARNING: THIS CODE IS WORSE THAN YANDERE SIMULATOR CODE! DON'T READ THIS TO LEARN ANYTHING, IT'S BAD!
 using System;
 using System.Collections.Generic;
 using HarmonyLib;
@@ -79,35 +79,35 @@ namespace AirJump
                                 jump_right_local = GameObject.CreatePrimitive(PrimitiveType.Cube);
                                 jump_right_local.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
                                 jump_right_local.transform.localScale = scale;
-                                jump_right_local.transform.position = new Vector3(0, (float)-0.075, 0) + __instance.rightHandTransform.position; //Sets position.
-                                jump_right_local.transform.rotation = __instance.rightHandTransform.rotation; //Sets rotation.
+                                jump_right_local.transform.position = new Vector3(0, (float)-0.075, 0) + __instance.rightHandTransform.position;
+                                jump_right_local.transform.rotation = __instance.rightHandTransform.rotation;
 
                                 object[] right_form_1 = new object[] { new Vector3(0, (float)-0.075, 0) + __instance.rightHandTransform.position, __instance.rightHandTransform.rotation };
 
-                                RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; //OoOoOoOoO ReceiverGroup.Others, sends signal to other people with the mod :O
+                                RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
 
-                                PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.right_jump_photoncode, right_form_1, raiseEventOptions, SendOptions.SendReliable); //Networking, if anyone abuses this in a seprate mod, it will be removed.
+                                PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.right_jump_photoncode, right_form_1, raiseEventOptions, SendOptions.SendReliable);
 
-                                once_right = true; //Sets once to true so it does it once.
-                                once_right_false = false; //I made this for networking so it doesn't spam it and deleted platforms every second.
+                                once_right = true;
+                                once_right_false = false;
                             }
                         }
                     }
                     else
                     {
-                        if (!once_right_false) //Deletion of right networked cube
+                        if (!once_right_false)
                         {
                             if (jump_right_local != null)
                             {
                                 GameObject.Destroy(jump_right_local);
                                 jump_right_local = null;
 
-                                once_right = false; //Sets once back so you can spawn in platforms again.
-                                once_right_false = true; //I made this for networking so it doesn't spam it and deleted platforms every second.
+                                once_right = false;
+                                once_right_false = true;
 
-                                RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; //OoOoOoOoO ReceiverGroup.Others, sends signal to other people with the mod :O
+                                RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
 
-                                PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.right_jump_deletion, null, raiseEventOptions, SendOptions.SendReliable); //Networking, if anyone abuses this in a seprate mod, it will be removed.
+                                PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.right_jump_deletion, null, raiseEventOptions, SendOptions.SendReliable);
                             }
                         }
                     }
@@ -121,35 +121,35 @@ namespace AirJump
                                 jump_left_local = GameObject.CreatePrimitive(PrimitiveType.Cube);
                                 jump_left_local.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
                                 jump_left_local.transform.localScale = scale;
-                                jump_left_local.transform.position = __instance.leftHandTransform.position; //Sets position.
-                                jump_left_local.transform.rotation = __instance.leftHandTransform.rotation; //Sets rotation.
+                                jump_left_local.transform.position = __instance.leftHandTransform.position;
+                                jump_left_local.transform.rotation = __instance.leftHandTransform.rotation;
 
                                 object[] left_form_1 = new object[] { __instance.leftHandTransform.position, __instance.leftHandTransform.rotation };
 
-                                RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; //OoOoOoOoO ReceiverGroup.Others, sends signal to other people with the mod :O
+                                RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
 
-                                PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.left_jump_photoncode, left_form_1, raiseEventOptions, SendOptions.SendReliable); //Networking, if anyone abuses this in a seprate mod, it will be removed.
+                                PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.left_jump_photoncode, left_form_1, raiseEventOptions, SendOptions.SendReliable);
 
-                                once_left = true; //Sets once to true so it does it once.
-                                once_left_false = false; //I made this for networking so it doesn't spam it and deleted platforms every second.
+                                once_left = true;
+                                once_left_false = false;
                             }
                         }
                     }
                     else
                     {
-                        if (!once_left_false) //Deletion of left networked cube
+                        if (!once_left_false)
                         {
                             if (jump_left_local != null)
                             {
                                 GameObject.Destroy(jump_left_local);
                                 jump_left_local = null;
 
-                                once_left = false; //Sets once back so you can spawn in platforms again.
-                                once_left_false = true; //I made this for networking so it doesn't spam it and deleted platforms every second.
+                                once_left = false;
+                                once_left_false = true;
 
-                                RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others }; //OoOoOoOoO ReceiverGroup.Others, sends signal to other people with the mod :O
+                                RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
 
-                                PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.left_jump_deletion, null, raiseEventOptions, SendOptions.SendReliable); //Networking, if anyone abuses this in a seprate mod, it will be removed.
+                                PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.left_jump_deletion, null, raiseEventOptions, SendOptions.SendReliable);
                             }
                         }
                     }
@@ -337,7 +337,7 @@ namespace AirJump
                         Console.WriteLine("An error occurred: Not enough game objects are currently available for the right hand (AirJump)"); //This should never happen.
                     }
                 }
-                else if (eventCode == (byte)PhotonEventCodes.left_jump_deletion) //Left platform network deletion
+                else if (eventCode == (byte)PhotonEventCodes.left_jump_deletion)
                 {
                     if (int_jump_left_network[0] == eventData.Sender)
                     {
@@ -385,7 +385,7 @@ namespace AirJump
                         jump_left_network[8] = null;
                     }
                 }
-                else if (eventCode == (byte)PhotonEventCodes.right_jump_deletion) //Right platform network deletion
+                else if (eventCode == (byte)PhotonEventCodes.right_jump_deletion)
                 {
                     if (int_jump_right_network[0] == eventData.Sender)
                     {
