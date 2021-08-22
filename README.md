@@ -4,9 +4,9 @@ How to use:
 1. Press grip buttons to make cube
 2. ... that's it
 
-# Downloads
-[PC](https://www.youtube.com/watch?v=yPYZpwSpKmA)
-[Quest](https://www.youtube.com/watch?v=yPYZpwSpKmA)
+# Download
+* [PC](https://www.youtube.com/watch?v=yPYZpwSpKmA)
+* [Quest](https://www.youtube.com/watch?v=yPYZpwSpKmA)
 
 ![](Gifs/networked_airjump_2.gif)
 
