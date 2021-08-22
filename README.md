@@ -11,7 +11,7 @@ How to use:
 ![](Gifs/networked_airjump_2.gif)
 
 # Updates
-Update 1: Networking and GitHub
+Networking and GitHub:
 * AirJump Official Oculus Quest Port.
 * GitHub meaning it's open source.
 * NETWORKING! Finally you can see(and jump off) your friends boxes, with this you can build houses and mess around. Very fun :)
