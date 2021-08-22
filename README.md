@@ -5,7 +5,7 @@ How to use:
 2. ... that's it
 
 # Download
-* [PC Download](https://github.com/fchb1239/AirJump/raw/main/Downloads/AirJump.dll) - Currently in beta
+* [PC Download](https://github.com/fchb1239/AirJump/raw/main/Downloads/AirJump.dll) (BETA - Not all release notes are out yet)
 * [Quest Download](https://www.youtube.com/watch?v=yPYZpwSpKmA)
 
 ![](Gifs/networked_airjump_2.gif)
