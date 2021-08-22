@@ -5,8 +5,8 @@ How to use:
 2. ... that's it
 
 # Download
-* [PC](https://www.youtube.com/watch?v=yPYZpwSpKmA)
-* [Quest](https://www.youtube.com/watch?v=yPYZpwSpKmA)
+* [PC Download](https://www.youtube.com/watch?v=yPYZpwSpKmA)
+* [Quest Download](https://www.youtube.com/watch?v=yPYZpwSpKmA)
 
 ![](Gifs/networked_airjump_2.gif)
 
