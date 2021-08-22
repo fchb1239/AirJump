@@ -5,7 +5,7 @@ How to use:
 2. ... that's it
 
 # Download
-* [PC Download](https://www.youtube.com/watch?v=yPYZpwSpKmA)
+* [PC Download](https://www.youtube.com/watch?v=yPYZpwSpKmA) - Currently in beta
 * [Quest Download](https://www.youtube.com/watch?v=yPYZpwSpKmA)
 
 ![](Gifs/networked_airjump_2.gif)
