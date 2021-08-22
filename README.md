@@ -24,4 +24,4 @@ Update 1: Networking and GitHub
 
 
 
-If you are making a networked mod, please don't use the RaiseEvent valued 69, 70, 71, 72.
+If you are making a networked mod, please don't use the RaiseEvent values 69, 70, 71, 72.
