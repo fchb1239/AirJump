@@ -39,7 +39,7 @@ namespace AirJump
             static Vector3 scale = new Vector3(0.01f, 0.3f, 0.4f);
             static bool gripDown_left;
             static bool gripDown_right;
-            static bool once_left; //removed false thing
+            static bool once_left;
             static bool once_right;
             static bool once_left_false;
             static bool once_right_false;
