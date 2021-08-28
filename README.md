@@ -8,10 +8,9 @@
 
 # Updates
 Networking and GitHub:
-* GitHub meaning it's open source.
-* NETWORKING! Finally you can see(and jump off) your friends boxes, with this you can build houses and mess around. Very fun :)
+* Made a GitHub for the project.
+* Networking.
 * Fixed bug spamming errors in the console.
-* Fixed bug where if you kept holding grip while going into a public lobby the platform would stay.
 * Other minor tweaks that should make the experience a little better.
 
 
