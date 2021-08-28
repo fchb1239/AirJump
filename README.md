@@ -8,7 +8,7 @@ How to use:
 * [PC Download](https://github.com/fchb1239/AirJump/raw/main/Downloads/AirJump.dll) (BETA) - Not all release notes are out yet
 * [Quest Download](https://www.youtube.com/watch?v=yPYZpwSpKmA)
 
-![](Gifs/networked_airjump_2.gif)
+![](GitHub/airjump_example.gif)
 
 # Updates
 Networking and GitHub:
