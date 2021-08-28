@@ -1,4 +1,5 @@
 ![AirJump](https://github.com/fchb1239/AirJump/raw/main/GitHub/airjump_back.png)
+[![PCDownload](https://github.com/fchb1239/AirJump/raw/main/GitHub/airjump_pc_download.png](https://github.com/Assistant/ModAssistant/releases/latest)
 # AirJump
 AirJump is a mod that lets you spawn cubes underneeth your hands.
 How to use:
