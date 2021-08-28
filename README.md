@@ -1,14 +1,13 @@
 [![AirJump](https://github.com/fchb1239/AirJump/raw/main/GitHub/airjump_back.png)](https://www.youtube.com/watch?v=yPYZpwSpKmA)
 
 # Download
-* [PC Download](https://github.com/fchb1239/AirJump/raw/main/Downloads/AirJump.dll) (BETA) - Not all release notes are out yet
-* [Quest Download](https://www.youtube.com/watch?v=yPYZpwSpKmA)
+* [PC Download](https://github.com/fchb1239/AirJump/raw/main/Downloads/AirJump.dll) (BETA)
+* [Quest Download](https://www.youtube.com/watch?v=yPYZpwSpKmA) - NOT RELEASED
 
 ![](GitHub/airjump_example.gif)
 
 # Updates
 Networking and GitHub:
-* AirJump official Oculus Quest port.
 * GitHub meaning it's open source.
 * NETWORKING! Finally you can see(and jump off) your friends boxes, with this you can build houses and mess around. Very fun :)
 * Fixed bug spamming errors in the console.
