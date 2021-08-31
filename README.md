@@ -1,7 +1,7 @@
 [![AirJump](https://github.com/fchb1239/AirJump/raw/main/GitHub/airjump_back.png)](https://www.youtube.com/watch?v=yPYZpwSpKmA)
 
 # Download
-* [PC Download](https://github.com/fchb1239/AirJump/raw/main/Downloads/AirJump.dll) (BETA)
+* [PC Download](https://github.com/fchb1239/AirJump/raw/main/Downloads/AirJump.dll)
 * [Quest Download](https://www.youtube.com/watch?v=yPYZpwSpKmA) - NOT RELEASED
 
 ![](GitHub/airjump_example.gif)
