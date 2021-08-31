@@ -6,14 +6,6 @@
 
 ![](GitHub/airjump_example.gif)
 
-# Updates
-Networking and GitHub:
-* Made a GitHub for the project.
-* Networking.
-* Fixed bug spamming errors in the console.
-* Other minor tweaks that should make the experience a little better.
-
-
 
 
 
