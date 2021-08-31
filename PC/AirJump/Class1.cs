@@ -209,5 +209,3 @@ namespace AirJump
         }
     }
 }
-
-//Copyright (c) 2021 fchb1239
