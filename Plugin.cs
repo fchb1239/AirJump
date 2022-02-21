@@ -3,6 +3,7 @@ using BepInEx;
 using Bepinject;
 using System.Reflection;
 using Utilla;
+using System.ComponentModel;
 
 namespace AirJump
 {
