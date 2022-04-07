@@ -1,6 +1,8 @@
 # AirJump
+The source code is read-only, don't go around thinking you can just steal it and put it on your cheat menu
+
 The mod that lets you spawn cubes underneeth your hands.
-* [PC Download](https://github.com/fchb1239/AirJump/releases/tag/airjump1.0.1)
+* [PC Download](https://github.com/fchb1239/AirJump/releases/tag/1.0.2)
 
 # Change size & material!
 ![](https://user-images.githubusercontent.com/29258204/149635139-723a4ef8-af21-49c7-9d53-5b9b3e532496.gif)
