@@ -1,5 +1,5 @@
 # AirJump
-The source code is gone cuz people be stealing it.
+STOP STEALING MY CODE.
 
 The mod that lets you spawn tiles underneeth your hands.
 * [PC Download](https://github.com/fchb1239/AirJump/releases/tag/1.0.2)
