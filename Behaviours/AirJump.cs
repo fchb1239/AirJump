@@ -243,10 +243,12 @@ namespace AirJump.Behaviours
                 switch (eventCode)
                 {
                     case (byte)PhotonEventCodes.LeftJump:
-                        leftJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3], otherCollisions));
+                        if(!leftJumpNetwork.Contains(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId)
+                            leftJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3], otherCollisions));
                         break;
                     case (byte)PhotonEventCodes.RightJump:
-                        rightJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3], otherCollisions));
+                        if(!rightJumpNetwork.Contain(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId)
+                            rightJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3], otherCollisions));
                         break;
                     case (byte)PhotonEventCodes.LeftJumpDeletion:
                         GameObject.Destroy(leftJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId]);
