@@ -13,8 +13,11 @@ namespace AirJump
     [Description("HauntedModMenu")]
     public class Plugin : BaseUnityPlugin
     {
+        public static Plugin instance;
+        
         public void Awake()
         {
+            instance = this;
             new Harmony(PluginInfo.GUID).PatchAll(Assembly.GetExecutingAssembly());
             Zenjector.Install<ComputerInterface.MainInstaller>().OnProject();
         }
