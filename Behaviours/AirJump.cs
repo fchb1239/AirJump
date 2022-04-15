@@ -18,38 +18,44 @@ namespace AirJump.Behaviours
     {
         public static AirJump instance;
 
-        string fileLocation = string.Format("{0}/SaveData", Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-        string[] fileArray = new string[3];
+        private string fileLocation = string.Format("{0}/SaveData", Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+        private string[] fileArray = new string[3];
 
-        public bool modEnabled;
-        public bool isInModdedRoom;
-        bool isLeftPressed;
-        bool isRightPressed;
+        public bool modEnabled = false;
+        public bool isInModdedRoom = false;
+        private bool isLeftPressed = false;
+        private bool isRightPressed = false;
 
-        bool onceRight;
-        bool onceLeft;
-
+        private bool onceRight = false;
+        private bool onceLeft = false;
+        
+        public bool otherCollisions = false;
+        
         public int currentSizeIndex = 0;
         public int currentMaterialIndex = 0;
 
-        GorillaLocomotion.Player player = GorillaLocomotion.Player.Instance;
+        private GorillaLocomotion.Player player = GorillaLocomotion.Player.Instance;
 
-        GameObject leftJump;
-        GameObject rightJump;
+        private GameObject leftJump;
+        private GameObject rightJump;
 
-        Dictionary<string, GameObject> leftJumpNetwork = new Dictionary<string, GameObject>();
-        Dictionary<string, GameObject> rightJumpNetwork = new Dictionary<string, GameObject>();
+        private Dictionary<string, GameObject> leftJumpNetwork = new Dictionary<string, GameObject>();
+        private Dictionary<string, GameObject> rightJumpNetwork = new Dictionary<string, GameObject>();
 
-        XRNode leftHandNode = XRNode.LeftHand;
-        XRNode rightHandNode = XRNode.RightHand;
+        private XRNode leftHandNode = XRNode.LeftHand;
+        private XRNode rightHandNode = XRNode.RightHand;
 
-        Vector3[] sizes = new Vector3[] { new Vector3(0.0125f, 0.28f, 0.3825f), new Vector3(0.0125f, 0.42f, 0.57375f), new Vector3(0.0125f, 0.56f, 0.765f) };
-        Material[] materials = new Material[] { null, Resources.Load<Material>("objects/treeroom/materials/darkfur"), null, null, Resources.Load<Material>("objects/character/materials/ice") };
+        private Vector3[] sizes = new Vector3[] { new Vector3(0.0125f, 0.28f, 0.3825f), new Vector3(0.0125f, 0.42f, 0.57375f), new Vector3(0.0125f, 0.56f, 0.765f) };
+        private Material[] materials = new Material[] { null, Resources.Load<Material>("objects/treeroom/materials/darkfur"), null, null, Resources.Load<Material>("objects/character/materials/ice") };
 
         void Awake()
         {
             instance = this;
-
+            
+            //Not tseted but should work better
+            materials[2] = GorillaTagger.instance.offlineVRRig.materialsToChangeTo[2];
+            materials[3] = GorillaTagger.instance.offlineVRRig.materialsToChangeTo[1];
+            /*
             foreach (VRRig rig in GameObject.FindObjectsOfType(typeof(VRRig)))
             {
                 if (rig.isOfflineVRRig)
@@ -58,7 +64,8 @@ namespace AirJump.Behaviours
                     materials[3] = rig.materialsToChangeTo[1];
                 }
             }
-
+            */
+            
             leftJump = CreateJump();
             rightJump = CreateJump();
 
@@ -68,6 +75,7 @@ namespace AirJump.Behaviours
                 modEnabled = bool.Parse(fileArray[0]);
                 UpdateSize(int.Parse(fileArray[1]));
                 UpdateMat(int.Parse(fileArray[2]));
+                otherCollisions = bool.Parse(fileArray[3]);
             }
             else
             {
@@ -77,6 +85,7 @@ namespace AirJump.Behaviours
                 fileArray[0] = modEnabled.ToString();
                 fileArray[1] = currentSizeIndex.ToString();
                 fileArray[2] = currentMaterialIndex.ToString();
+                fileArray[3] = otherCollisions.ToString();
             }
 
             PhotonNetwork.NetworkingClient.EventReceived += NetworkJump;
@@ -166,7 +175,8 @@ namespace AirJump.Behaviours
             fileArray[0] = modEnabled.ToString();
             File.WriteAllText(fileLocation, string.Join(",", fileArray));
         }
-
+        
+        
         public void UpdateSize(int index)
         {
             leftJump.transform.localScale = sizes[index];
@@ -223,10 +233,10 @@ namespace AirJump.Behaviours
                 switch (eventCode)
                 {
                     case (byte)PhotonEventCodes.LeftJump:
-                        leftJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3]));
+                        leftJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3], otherCollisions));
                         break;
                     case (byte)PhotonEventCodes.RightJump:
-                        rightJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3]));
+                        rightJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3], otherCollisions));
                         break;
                     case (byte)PhotonEventCodes.LeftJumpDeletion:
                         GameObject.Destroy(leftJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId]);
@@ -277,12 +287,18 @@ namespace AirJump.Behaviours
             return obj;
         }
 
-        GameObject CreateJumpNetwork(Vector3 position, Quaternion rotation, int sizeIndex, int matIndex)
+        GameObject CreateJumpNetwork(Vector3 position, Quaternion rotation, int sizeIndex, int matIndex, bool otherCollide)
         {
             GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
             obj.transform.localScale = sizes[sizeIndex];
             obj.transform.position = position;
             obj.transform.rotation = rotation;
+            
+            //Highly untested
+            if(!otherCollide)
+            {
+                Destroy(obj.GetComponent<BoxCollider>());
+            }
 
             if (matIndex == 0)
                 obj.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
