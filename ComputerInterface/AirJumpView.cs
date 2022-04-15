@@ -23,7 +23,7 @@ namespace AirJump.ComputerInterface
 
             selectionHandler = new UISelectionHandler(EKeyboardKey.Up, EKeyboardKey.Down, EKeyboardKey.Enter);
 
-            selectionHandler.MaxIdx = 2;
+            selectionHandler.MaxIdx = 3;
 
             selectionHandler.OnSelected += OnEntrySelected;
 
@@ -69,10 +69,15 @@ namespace AirJump.ComputerInterface
             {
                 switch (index)
                 {
-                case 0:
+                    case 0:
                         Behaviours.AirJump.instance.UpdateEnabled();
-                    UpdateScreen();
-                    break;
+                        UpdateScreen();
+                        break;
+                    case 3:
+                        Behaviours.AirJump.instance.UpdateCollisions();
+                        UpdateScreen();
+                        break;
+                    
                 }
             }
             catch (Exception e) { Console.WriteLine(e); }
