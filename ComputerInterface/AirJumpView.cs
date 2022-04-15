@@ -53,7 +53,7 @@ namespace AirJump.ComputerInterface
                 str.AppendLine(selectionHandler.GetIndicatedText(1, $"Material: <color=#{highlightColour}>{matNames[Behaviours.AirJump.instance.currentMaterialIndex]}</color>"));
                 str.AppendLine(selectionHandler.GetIndicatedText(2, $"Size: <color=#{highlightColour}>{sizeNames[Behaviours.AirJump.instance.currentSizeIndex]}</color>"));
                 //Not tested
-                str.AppendLine(selectionHandler.GetIndicatedText(0, $"<color={(Behaviours.AirJump.instance.otherCollision ? string.Format("#{0}>[Enabled]", highlightColour) : "white>[Disabled]")}</color>"));
+                str.AppendLine(selectionHandler.GetIndicatedText(0, $"Other collisions: <color={(Behaviours.AirJump.instance.otherCollision ? string.Format("#{0}>[Enabled]", highlightColour) : "white>[Disabled]")}</color>"));
 
                 if (!Behaviours.AirJump.instance.isInModdedRoom)
                 {
