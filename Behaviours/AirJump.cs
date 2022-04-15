@@ -176,6 +176,13 @@ namespace AirJump.Behaviours
             File.WriteAllText(fileLocation, string.Join(",", fileArray));
         }
         
+        public void UpdateCollisions()
+        {
+            otherCollisions = !otherCollisions;
+            fileArray[3] = otherCollisions.ToString();
+            File.WriteAllText(fileLocation, string.Join(",", fileArray));
+        }
+        
         
         public void UpdateSize(int index)
         {
