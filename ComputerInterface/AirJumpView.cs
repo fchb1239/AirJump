@@ -23,7 +23,7 @@ namespace AirJump.ComputerInterface
 
             selectionHandler = new UISelectionHandler(EKeyboardKey.Up, EKeyboardKey.Down, EKeyboardKey.Enter);
 
-            selectionHandler.MaxIdx = 2;
+            selectionHandler.MaxIdx = 3;
 
             selectionHandler.OnSelected += OnEntrySelected;
 
@@ -52,6 +52,8 @@ namespace AirJump.ComputerInterface
                 str.AppendLine(selectionHandler.GetIndicatedText(0, $"<color={(Behaviours.AirJump.instance.modEnabled ? string.Format("#{0}>[Enabled]", highlightColour) : "white>[Disabled]")}</color>"));
                 str.AppendLine(selectionHandler.GetIndicatedText(1, $"Material: <color=#{highlightColour}>{matNames[Behaviours.AirJump.instance.currentMaterialIndex]}</color>"));
                 str.AppendLine(selectionHandler.GetIndicatedText(2, $"Size: <color=#{highlightColour}>{sizeNames[Behaviours.AirJump.instance.currentSizeIndex]}</color>"));
+                //Not tested
+                str.AppendLine(selectionHandler.GetIndicatedText(3, $"Other collisions: <color={(Behaviours.AirJump.instance.otherCollisions ? string.Format("#{0}>[Enabled]", highlightColour) : "white>[Disabled]")}</color>"));
 
                 if (!Behaviours.AirJump.instance.isInModdedRoom)
                 {
@@ -68,8 +70,12 @@ namespace AirJump.ComputerInterface
                 switch (index)
                 {
                 case 0:
-                        Behaviours.AirJump.instance.UpdateEnabled();
+                    Behaviours.AirJump.instance.UpdateEnabled();
                     UpdateScreen();
+                    break;
+
+                case 3:
+                    Behaviours.AirJump.instance.ToggleCollisions();
                     break;
                 }
             }

@@ -19,10 +19,11 @@ namespace AirJump.Behaviours
         public static AirJump instance;
 
         string fileLocation = string.Format("{0}/SaveData", Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-        string[] fileArray = new string[3];
+        string[] fileArray = new string[4];
 
         public bool modEnabled;
         public bool isInModdedRoom;
+        public bool otherCollisions;
         bool isLeftPressed;
         bool isRightPressed;
 
@@ -66,12 +67,14 @@ namespace AirJump.Behaviours
             {
                 fileArray = File.ReadAllText(fileLocation).Split(',');
                 modEnabled = bool.Parse(fileArray[0]);
+                otherCollisions = bool.Parse(fileArray[3]);
                 UpdateSize(int.Parse(fileArray[1]));
                 UpdateMat(int.Parse(fileArray[2]));
             }
             else
             {
                 modEnabled = false;
+                otherCollisions = true;
                 currentSizeIndex = 0;
                 currentMaterialIndex = 0;
                 fileArray[0] = modEnabled.ToString();
@@ -79,6 +82,7 @@ namespace AirJump.Behaviours
                 fileArray[2] = currentMaterialIndex.ToString();
             }
 
+            PhotonNetwork.AddCallbackTarget(this);
             PhotonNetwork.NetworkingClient.EventReceived += NetworkJump;
         }
 
@@ -119,7 +123,7 @@ namespace AirJump.Behaviours
                 {
                     if (!onceRight)
                     {
-                        rightJump.transform.position = new Vector3(0, (float)-0.0075, 0) + player.rightHandTransform.position;
+                        rightJump.transform.position = new Vector3(0, -0.0075f, 0) + player.rightHandTransform.position;
                         //rightJump.transform.rotation = Quaternion.Euler(0, 45, 0) * player.rightHandTransform.rotation;
                         rightJump.transform.rotation = player.rightHandTransform.rotation;
 
@@ -154,17 +158,44 @@ namespace AirJump.Behaviours
                 GameObject.Destroy(obj);
         }
 
-        public void UpdateEnabled()
+        public void UpdateEnabled(bool? toEnable = null)
         {
-            modEnabled = !modEnabled;
-            if (!modEnabled)
-            {
+            modEnabled = (toEnable.HasValue ? toEnable.Value : !modEnabled);
+
+            if (!modEnabled) {
                 leftJump.transform.position = new Vector3(0, -999, 0);
                 rightJump.transform.position = new Vector3(0, -999, 0);
+                UpdateCollisions(false);
+
+            } else {
+                UpdateCollisions(modEnabled && isInModdedRoom && otherCollisions);
             }
 
             fileArray[0] = modEnabled.ToString();
             File.WriteAllText(fileLocation, string.Join(",", fileArray));
+        }
+
+        public  void ToggleCollisions(bool? toEnable = null)
+		{
+            otherCollisions = toEnable ?? !otherCollisions;
+            UpdateCollisions(otherCollisions);
+
+            fileArray[3] = otherCollisions.ToString();
+            File.WriteAllText(fileLocation, string.Join(",", fileArray));
+        }
+
+        public void UpdateCollisions(bool toEnable)
+		{
+            try {
+                foreach (var platform in leftJumpNetwork.Values) {
+                    platform.GetComponent<Collider>().enabled = toEnable;
+                }
+
+                foreach (var platform in rightJumpNetwork.Values) {
+                    platform.GetComponent<Collider>().enabled = toEnable;
+				}
+
+            } catch { }  
         }
 
         public void UpdateSize(int index)
@@ -217,51 +248,53 @@ namespace AirJump.Behaviours
             {
                 object[] data = null;
 
-                if (eventData.CustomData != null)
+                if (eventData.CustomData != null) {
                     data = (object[])eventData.CustomData;
+                
+                } 
 
                 switch (eventCode)
                 {
-                    case (byte)PhotonEventCodes.LeftJump:
-                        leftJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3]));
+                    case (byte)PhotonEventCodes.LeftJump: {
+                        UpdateNetworkedPlatform(data, eventData.Sender, leftJumpNetwork);
                         break;
-                    case (byte)PhotonEventCodes.RightJump:
-                        rightJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3]));
+                    }
+
+                    case (byte)PhotonEventCodes.RightJump: {
+                        UpdateNetworkedPlatform(data, eventData.Sender, rightJumpNetwork);
                         break;
-                    case (byte)PhotonEventCodes.LeftJumpDeletion:
-                        GameObject.Destroy(leftJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId]);
-                        leftJumpNetwork.Remove(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId);
-                        break;
-                    case (byte)PhotonEventCodes.RightJumpDeletion:
-                        GameObject.Destroy(rightJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId]);
-                        rightJumpNetwork.Remove(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId);
-                        break;
-                    case (byte)PhotonEventCodes.UpdateJump:
-                        if ((bool)data[0])
-                        {
-                            if(rightJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId] != null)
-                            {
-                                if((int)data[1] == 0)
-                                    rightJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].GetComponent<Renderer>().material.SetColor("_Color", Color.black);
-                                else
-                                    rightJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].GetComponent<Renderer>().material = materials[(int)data[1]];
-                            }
-                            if (leftJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId] != null)
-                            {
-                                if ((int)data[1] == 0)
-                                    leftJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].GetComponent<Renderer>().material.SetColor("_Color", Color.black);
-                                else
-                                    leftJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].GetComponent<Renderer>().material = materials[(int)data[1]];
-                            }
-                        }
-                        else
-                        {
-                            if (rightJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId] != null)
-                                rightJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].transform.localScale = sizes[(int)data[1]];
-                            if (leftJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId] != null)
-                                leftJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].transform.localScale = sizes[(int)data[1]];
+                    }
+
+                    case (byte)PhotonEventCodes.LeftJumpDeletion: {
+                        if (leftJumpNetwork.TryGetValue(PhotonNetwork.CurrentRoom?.GetPlayer(eventData.Sender)?.UserId, out var platform)) {
+                            platform?.SetActive(false);
                         }
                         break;
+                    }
+
+                    case (byte)PhotonEventCodes.RightJumpDeletion: {
+                        if (rightJumpNetwork.TryGetValue(PhotonNetwork.CurrentRoom?.GetPlayer(eventData.Sender)?.UserId, out var platform)) {
+                            platform?.SetActive(false);
+						}
+                        break;
+					}                        
+
+                    case (byte)PhotonEventCodes.UpdateJump: {
+                        string userKey = PhotonNetwork.CurrentRoom?.GetPlayer(eventData.Sender)?.UserId;
+
+                        if (data[1] is int index && leftJumpNetwork.TryGetValue(userKey, out var leftPlatform) && rightJumpNetwork.TryGetValue(userKey, out var rightPlatform)) {
+                            if ((bool)data[0]) {
+                                    SetPlatformMaterial(ref rightPlatform, index);
+                                    SetPlatformMaterial(ref leftPlatform, index);
+
+                            } else {
+                                rightPlatform.transform.localScale = sizes[index];
+                                leftPlatform.transform.localScale = sizes[index];
+                            }
+                        }
+                        break;
+                    }
+
                     default:
                         //just incase
                         break;
@@ -279,19 +312,72 @@ namespace AirJump.Behaviours
 
         GameObject CreateJumpNetwork(Vector3 position, Quaternion rotation, int sizeIndex, int matIndex)
         {
-            GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            obj.transform.localScale = sizes[sizeIndex];
-            obj.transform.position = position;
-            obj.transform.rotation = rotation;
+            GameObject platformObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            platformObject.GetComponent<Collider>().enabled = otherCollisions && isInModdedRoom && modEnabled;
+            SetJumpNetwork(ref platformObject, position, rotation, sizeIndex, matIndex);
 
-            if (matIndex == 0)
-                obj.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
-            else
-                obj.GetComponent<Renderer>().material = materials[matIndex];
-
-            return obj;
+            return platformObject;
         }
-    }
+
+        void SetJumpNetwork(ref GameObject platformObject, Vector3 position, Quaternion rotation, int sizeIndex, int matIndex)
+        {
+            //GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            platformObject.transform.localScale = sizes[sizeIndex];
+            platformObject.transform.position = position;
+            platformObject.transform.rotation = rotation;
+
+            SetPlatformMaterial(ref platformObject, matIndex);
+        }
+
+        void SetPlatformMaterial(ref GameObject platformObject, in int index)
+		{
+            var renderer = platformObject?.GetComponent<Renderer>();
+            if (index == 0) {
+                renderer.material.SetColor("_Color", Color.black);
+
+            } else {
+                renderer.material = materials[index];
+			}
+		}
+
+        private void UpdateNetworkedPlatform(in object[] platformData, in int senderID, Dictionary<string, GameObject> platformMap)
+		{
+            try {
+                if (platformData?.Length < 4) {
+                    Debug.Log("Platform information being sent is missing data");
+				}
+
+                string userKey = PhotonNetwork.CurrentRoom?.GetPlayer(senderID)?.UserId;
+                
+                if (platformData[0] is Vector3 pos && platformData[1] is Quaternion rot && platformData[2] is int platSize && platformData[3] is int platMat) {
+                    if (platformMap.TryGetValue(userKey, out var platform)) {
+                        SetJumpNetwork(ref platform, pos, rot, platSize, platMat);
+                        if(!platform.activeSelf) {
+                            platform.SetActive(true);
+						}
+
+					} else {
+                        platformMap.Add(userKey, CreateJumpNetwork(pos, rot, platSize, platMat));
+					}
+				}
+            
+            } catch (Exception e) {
+                Debug.Log(e.ToString());
+			}
+		}
+        public void PlayerLeftRoom(string userID)
+		{
+            if (rightJumpNetwork.TryGetValue(userID, out var rightPlatform)) {
+                GameObject.Destroy(rightPlatform);
+                rightJumpNetwork.Remove(userID);
+            }
+
+            if (leftJumpNetwork.TryGetValue(userID, out var leftplatform)) {
+                GameObject.Destroy(leftplatform);
+                leftJumpNetwork.Remove(userID);
+            }
+		}
+	}
 
     public enum PhotonEventCodes
     {

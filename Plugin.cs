@@ -29,7 +29,7 @@ namespace AirJump
         void OnEnable()
 		{
             if (Behaviours.AirJump.instance != null && Behaviours.AirJump.instance.modEnabled == false) {
-                Behaviours.AirJump.instance.UpdateEnabled();
+                Behaviours.AirJump.instance.UpdateEnabled(true);
 
                 try {
                     UpdateScreen();
@@ -43,7 +43,7 @@ namespace AirJump
         void OnDisable()
 		{
             if (Behaviours.AirJump.instance != null && Behaviours.AirJump.instance.modEnabled == true) {
-                Behaviours.AirJump.instance.UpdateEnabled();
+                Behaviours.AirJump.instance.UpdateEnabled(false);
 
                 try {
                     UpdateScreen();

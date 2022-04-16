@@ -17,4 +17,16 @@ namespace AirJump.Patches
             __instance.gameObject.AddComponent<Behaviours.AirJump>();
         }
     }
+
+    [HarmonyPatch(typeof(VRRig))]
+    [HarmonyPatch("Start", MethodType.Normal)]
+    class RigPatch
+	{
+        private static void Postfix(VRRig __instance)
+		{
+            if (!__instance.isOfflineVRRig && !__instance.photonView.IsMine) {
+                __instance.gameObject.AddComponent<Behaviours.PlayerLeft>();
+			}
+		}
+	}
 }
