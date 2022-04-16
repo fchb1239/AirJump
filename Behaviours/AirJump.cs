@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 using System.Reflection;
@@ -28,9 +28,9 @@ namespace AirJump.Behaviours
 
         private bool onceRight = false;
         private bool onceLeft = false;
-        
+
         public bool otherCollisions = false;
-        
+
         public int currentSizeIndex = 0;
         public int currentMaterialIndex = 0;
 
@@ -51,10 +51,10 @@ namespace AirJump.Behaviours
         void Awake()
         {
             instance = this;
-            
+
             //Not tseted but should work better
-            materials[2] = GorillaTagger.instance.offlineVRRig.materialsToChangeTo[2];
-            materials[3] = GorillaTagger.instance.offlineVRRig.materialsToChangeTo[1];
+            materials[2] = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[2];
+            materials[3] = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[1];
             /*
             foreach (VRRig rig in GameObject.FindObjectsOfType(typeof(VRRig)))
             {
@@ -65,7 +65,7 @@ namespace AirJump.Behaviours
                 }
             }
             */
-            
+
             leftJump = CreateJump();
             rightJump = CreateJump();
 
@@ -172,21 +172,21 @@ namespace AirJump.Behaviours
                 leftJump.transform.position = new Vector3(0, -999, 0);
                 rightJump.transform.position = new Vector3(0, -999, 0);
             }
-            
+
             Plugin.instance.SetActive(modEnabled);
-            
+
             fileArray[0] = modEnabled.ToString();
             File.WriteAllText(fileLocation, string.Join(",", fileArray));
         }
-        
+
         public void UpdateCollisions()
         {
             otherCollisions = !otherCollisions;
             fileArray[3] = otherCollisions.ToString();
             File.WriteAllText(fileLocation, string.Join(",", fileArray));
         }
-        
-        
+
+
         public void UpdateSize(int index)
         {
             leftJump.transform.localScale = sizes[index];
@@ -194,7 +194,7 @@ namespace AirJump.Behaviours
 
             currentSizeIndex = index;
 
-            if(isRightPressed || isLeftPressed)
+            if (isRightPressed || isLeftPressed)
             {
                 object[] sizeData = new object[] { false, index };
                 PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.UpdateJump, sizeData, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
@@ -243,11 +243,11 @@ namespace AirJump.Behaviours
                 switch (eventCode)
                 {
                     case (byte)PhotonEventCodes.LeftJump:
-                        if(!leftJumpNetwork.Contains(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId)
+                        if (!leftJumpNetwork.ContainsKey(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId))
                             leftJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3], otherCollisions));
                         break;
                     case (byte)PhotonEventCodes.RightJump:
-                        if(!rightJumpNetwork.Contain(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId)
+                        if (!rightJumpNetwork.ContainsKey(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId))
                             rightJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3], otherCollisions));
                         break;
                     case (byte)PhotonEventCodes.LeftJumpDeletion:
@@ -261,9 +261,9 @@ namespace AirJump.Behaviours
                     case (byte)PhotonEventCodes.UpdateJump:
                         if ((bool)data[0])
                         {
-                            if(rightJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId] != null)
+                            if (rightJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId] != null)
                             {
-                                if((int)data[1] == 0)
+                                if ((int)data[1] == 0)
                                     rightJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].GetComponent<Renderer>().material.SetColor("_Color", Color.black);
                                 else
                                     rightJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].GetComponent<Renderer>().material = materials[(int)data[1]];
@@ -288,7 +288,8 @@ namespace AirJump.Behaviours
                         //just incase
                         break;
                 }
-            } catch { }
+            }
+            catch { }
         }
 
         GameObject CreateJump()
@@ -305,9 +306,9 @@ namespace AirJump.Behaviours
             obj.transform.localScale = sizes[sizeIndex];
             obj.transform.position = position;
             obj.transform.rotation = rotation;
-            
+
             //Highly untested
-            if(!otherCollide)
+            if (!otherCollide)
             {
                 Destroy(obj.GetComponent<BoxCollider>());
             }
