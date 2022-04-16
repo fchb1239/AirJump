@@ -86,7 +86,7 @@ namespace AirJump.Behaviours
                 fileArray[1] = currentSizeIndex.ToString();
                 fileArray[2] = currentMaterialIndex.ToString();
                 fileArray[3] = otherCollisions.ToString();
-                Plugin.instance.SetActive(modEnabled);
+                Plugin.instance.enabled = modEnabled;
             }
 
             PhotonNetwork.NetworkingClient.EventReceived += NetworkJump;
@@ -173,7 +173,7 @@ namespace AirJump.Behaviours
                 rightJump.transform.position = new Vector3(0, -999, 0);
             }
 
-            Plugin.instance.SetActive(modEnabled);
+            Plugin.instance.enabled = modEnabled;
 
             fileArray[0] = modEnabled.ToString();
             File.WriteAllText(fileLocation, string.Join(",", fileArray));
