@@ -22,7 +22,7 @@ namespace AirJump.Behaviours
         public static AirJump instance;
 
         private string fileLocation = string.Format("{0}/SaveData", Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-        private string[] fileArray = new string[4] { "false", "0", "0", "true" };
+        private SaveData saveData;
 
         public bool modEnabled = false;
         public bool isInModdedRoom = false;
@@ -77,29 +77,27 @@ namespace AirJump.Behaviours
             {
                 if (File.Exists(fileLocation))
                 {
-                    fileArray = File.ReadAllText(fileLocation).Split(',');
-                    modEnabled = bool.Parse(fileArray[0]);
-                    UpdateSize(int.Parse(fileArray[1]));
-                    UpdateMat(int.Parse(fileArray[2]));
-                    settings.otherCollisions = bool.Parse(fileArray[3]);
+                    saveData = JsonUtility.FromJson<SaveData>(File.ReadAllText(fileLocation));
+                    modEnabled = saveData.enabled;
+                    UpdateSize(saveData.sizeIndex);
+                    UpdateMat(saveData.matIndex);
+                    settings.otherCollisions = saveData.otherCollisions;
                 }
                 else
                 {
-                    fileArray = new string[4] { "false", "0", "0", "true" };
-                    fileArray[0] = modEnabled.ToString();
-                    fileArray[1] = settings.sizeIndex.ToString();
-                    fileArray[2] = settings.matIndex.ToString();
-                    fileArray[3] = settings.otherCollisions.ToString();
+                    saveData.enabled = modEnabled;
+                    saveData.sizeIndex = settings.sizeIndex;
+                    saveData.matIndex = settings.matIndex;
+                    saveData.otherCollisions = settings.otherCollisions;
                     Plugin.instance.enabled = modEnabled;
                 }
             }
             catch
             {
-                fileArray = new string[4] { "false", "0", "0", "true" };
-                modEnabled = bool.Parse(fileArray[0]);
-                UpdateSize(int.Parse(fileArray[1]));
-                UpdateMat(int.Parse(fileArray[2]));
-                settings.otherCollisions = bool.Parse(fileArray[3]);
+                modEnabled = saveData.enabled;
+                UpdateSize(saveData.sizeIndex);
+                UpdateMat(saveData.matIndex);
+                settings.otherCollisions = saveData.otherCollisions;
                 Plugin.instance.enabled = modEnabled;
             }
 
@@ -189,15 +187,15 @@ namespace AirJump.Behaviours
 
             Plugin.instance.enabled = modEnabled;
 
-            fileArray[0] = modEnabled.ToString();
-            File.WriteAllText(fileLocation, string.Join(",", fileArray));
+            saveData.enabled = modEnabled;
+            File.WriteAllText(fileLocation, JsonUtility.ToJson(saveData));
         }
 
         public void UpdateCollisions()
         {
             settings.otherCollisions = !settings.otherCollisions;
-            fileArray[3] = settings.otherCollisions.ToString();
-            File.WriteAllText(fileLocation, string.Join(",", fileArray));
+            saveData.otherCollisions = settings.otherCollisions;
+            File.WriteAllText(fileLocation, JsonUtility.ToJson(saveData));
 
             foreach (GameObject obj in leftJumpNetwork.Values)
                 obj.GetComponent<BoxCollider>().enabled = true;
@@ -219,8 +217,8 @@ namespace AirJump.Behaviours
                 PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.UpdateJump, sizeData, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
             }
 
-            fileArray[1] = index.ToString();
-            File.WriteAllText(fileLocation, string.Join(",", fileArray));
+            saveData.sizeIndex = index;
+            File.WriteAllText(fileLocation, JsonUtility.ToJson(saveData));
         }
 
         public void UpdateMat(int index)
@@ -255,8 +253,8 @@ namespace AirJump.Behaviours
                 PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.UpdateJump, matData, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
             }
 
-            fileArray[2] = index.ToString();
-            File.WriteAllText(fileLocation, string.Join(",", fileArray));
+            saveData.matIndex = index;
+            File.WriteAllText(fileLocation, JsonUtility.ToJson(saveData));
         }
 
         void NetworkJump(EventData eventData)
