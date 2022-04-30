@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 
 namespace AirJump.Patches
 {
@@ -8,12 +8,7 @@ namespace AirJump.Patches
     {
         private static void Postfix(GorillaLocomotion.Player __instance)
         {
-            /*
-            if(Behaviours.AirJump.instance == null)
-            {
-                __instance.gameObject.AddComponent<Behaviours.AirJump>();
-            }
-            */
+            __instance.gameObject.AddComponent<Behaviours.VersionVerifier>();
             __instance.gameObject.AddComponent<Behaviours.AirJump>();
         }
     }
