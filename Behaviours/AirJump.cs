@@ -32,7 +32,7 @@ namespace AirJump.Behaviours
         private bool onceRight = false;
         private bool onceLeft = false;
 
-        public Settings settings;
+        public Settings settings = new Settings();
 
         private GorillaLocomotion.Player player = GorillaLocomotion.Player.Instance;
 
