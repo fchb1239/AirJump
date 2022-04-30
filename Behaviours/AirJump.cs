@@ -12,6 +12,9 @@ using Photon.Pun;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
 
+using AirJump.Logging;
+using AirJump.Data;
+
 namespace AirJump.Behaviours
 {
     class AirJump : MonoBehaviour
@@ -29,10 +32,7 @@ namespace AirJump.Behaviours
         private bool onceRight = false;
         private bool onceLeft = false;
 
-        public bool otherCollisions = false;
-
-        public int currentSizeIndex = 0;
-        public int currentMaterialIndex = 0;
+        public Settings settings;
 
         private GorillaLocomotion.Player player = GorillaLocomotion.Player.Instance;
 
@@ -53,7 +53,7 @@ namespace AirJump.Behaviours
             instance = this;
 
             //Not tseted but should work better
-            Console.WriteLine("AirJump - Setting mats");
+            AJLog.Log("Setting mats");
             //materials[2] = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[2];
             //materials[3] = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[1];
 
@@ -68,11 +68,11 @@ namespace AirJump.Behaviours
             }
             
 
-            Console.WriteLine("AirJump - Creating jumps");
+            AJLog.Log("Creating jumps");
             leftJump = CreateJump();
             rightJump = CreateJump();
 
-            Console.WriteLine("AirJump - Doing file thing");
+            AJLog.Log("Doing file thing");
             try
             {
                 if (File.Exists(fileLocation))
@@ -81,15 +81,15 @@ namespace AirJump.Behaviours
                     modEnabled = bool.Parse(fileArray[0]);
                     UpdateSize(int.Parse(fileArray[1]));
                     UpdateMat(int.Parse(fileArray[2]));
-                    otherCollisions = bool.Parse(fileArray[3]);
+                    settings.otherCollisions = bool.Parse(fileArray[3]);
                 }
                 else
                 {
                     fileArray = new string[4] { "false", "0", "0", "true" };
                     fileArray[0] = modEnabled.ToString();
-                    fileArray[1] = currentSizeIndex.ToString();
-                    fileArray[2] = currentMaterialIndex.ToString();
-                    fileArray[3] = otherCollisions.ToString();
+                    fileArray[1] = settings.sizeIndex.ToString();
+                    fileArray[2] = settings.matIndex.ToString();
+                    fileArray[3] = settings.otherCollisions.ToString();
                     Plugin.instance.enabled = modEnabled;
                 }
             }
@@ -99,7 +99,7 @@ namespace AirJump.Behaviours
                 modEnabled = bool.Parse(fileArray[0]);
                 UpdateSize(int.Parse(fileArray[1]));
                 UpdateMat(int.Parse(fileArray[2]));
-                otherCollisions = bool.Parse(fileArray[3]);
+                settings.otherCollisions = bool.Parse(fileArray[3]);
                 Plugin.instance.enabled = modEnabled;
             }
 
@@ -121,7 +121,7 @@ namespace AirJump.Behaviours
                         //leftJump.transform.rotation = Quaternion.Euler(0, -45, 0) * player.leftHandTransform.rotation;
                         leftJump.transform.rotation = player.leftHandTransform.rotation;
 
-                        object[] leftJumpData = new object[] { player.leftHandTransform.position, player.leftHandTransform.rotation, currentSizeIndex, currentMaterialIndex };
+                        object[] leftJumpData = new object[] { player.leftHandTransform.position, player.leftHandTransform.rotation, settings.sizeIndex, settings.matIndex };
                         PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.LeftJump, leftJumpData, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
 
                         onceLeft = true;
@@ -147,7 +147,7 @@ namespace AirJump.Behaviours
                         //rightJump.transform.rotation = Quaternion.Euler(0, 45, 0) * player.rightHandTransform.rotation;
                         rightJump.transform.rotation = player.rightHandTransform.rotation;
 
-                        object[] rightJumpData = new object[] { player.rightHandTransform.position, player.rightHandTransform.rotation, currentSizeIndex, currentMaterialIndex };
+                        object[] rightJumpData = new object[] { player.rightHandTransform.position, player.rightHandTransform.rotation, settings.sizeIndex, settings.matIndex };
                         PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.RightJump, rightJumpData, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
 
                         onceRight = true;
@@ -195,8 +195,8 @@ namespace AirJump.Behaviours
 
         public void UpdateCollisions()
         {
-            otherCollisions = !otherCollisions;
-            fileArray[3] = otherCollisions.ToString();
+            settings.otherCollisions = !settings.otherCollisions;
+            fileArray[3] = settings.otherCollisions.ToString();
             File.WriteAllText(fileLocation, string.Join(",", fileArray));
 
             foreach (GameObject obj in leftJumpNetwork.Values)
@@ -211,7 +211,7 @@ namespace AirJump.Behaviours
             leftJump.transform.localScale = sizes[index];
             rightJump.transform.localScale = sizes[index];
 
-            currentSizeIndex = index;
+            settings.sizeIndex = index;
 
             if (isRightPressed || isLeftPressed)
             {
@@ -234,7 +234,7 @@ namespace AirJump.Behaviours
                 case 5:
                     foreach (VRRig vrrig in GorillaParent.instance.vrrigs)
                     {
-                        if (vrrig.isOfflineVRRig)
+                        if (vrrig.isMyPlayer)
                         {
                             leftJump.GetComponent<Renderer>().material = vrrig.mainSkin.material;
                             rightJump.GetComponent<Renderer>().material = vrrig.mainSkin.material;
@@ -247,7 +247,7 @@ namespace AirJump.Behaviours
                     break;
             }
 
-            currentMaterialIndex = index;
+            settings.matIndex = index;
 
             if (isRightPressed || isLeftPressed)
             {
@@ -274,11 +274,11 @@ namespace AirJump.Behaviours
                 {
                     case (byte)PhotonEventCodes.LeftJump:
                         if (!leftJumpNetwork.ContainsKey(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId))
-                            leftJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3], PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender), otherCollisions));
+                            leftJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3], PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender), settings.otherCollisions));
                         break;
                     case (byte)PhotonEventCodes.RightJump:
                         if (!rightJumpNetwork.ContainsKey(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId))
-                            rightJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3], PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender),  otherCollisions));
+                            rightJumpNetwork.Add(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId, CreateJumpNetwork((Vector3)data[0], (Quaternion)data[1], (int)data[2], (int)data[3], PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender), settings.otherCollisions));
                         break;
                     case (byte)PhotonEventCodes.LeftJumpDeletion:
                         GameObject.Destroy(leftJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId]);
