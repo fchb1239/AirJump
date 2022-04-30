@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 
 using UnityEngine;
@@ -22,7 +22,7 @@ namespace AirJump.Behaviours
 
         private IEnumerator VerifyVersion()
         {
-            AJLog.Log("Downloading newest version");
+            AJLog.Log("Getting newest version");
             var request = new UnityWebRequest($"https://raw.githubusercontent.com/fchb1239/AirJump/main/NewestVersion", "GET");
             request.downloadHandler = new DownloadHandlerBuffer();
             yield return request.SendWebRequest();
