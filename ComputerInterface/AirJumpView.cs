@@ -1,7 +1,9 @@
 using System;
-using Utilla;
+
 using ComputerInterface;
 using ComputerInterface.ViewLib;
+
+using AirJump.Logging;
 
 namespace AirJump.ComputerInterface
 {
@@ -14,7 +16,7 @@ namespace AirJump.ComputerInterface
         //public int mat;
         //public int size;
 
-        string[] matNames = new string[] { "Normal", "Fur", "Lava", "Rock", "Ice" };
+        string[] matNames = new string[] { "Normal", "Fur", "Lava", "Rock", "Ice", "Monke" };
         string[] sizeNames = new string[] { "Normal", "Bigger", "Chonk" };
 
         public AirJumpView()
@@ -49,16 +51,23 @@ namespace AirJump.ComputerInterface
                 str.MakeBar('-', SCREEN_WIDTH, 0, "ffffff10");
                 str.EndAlign().AppendLines(1);
 
-                str.AppendLine(selectionHandler.GetIndicatedText(0, $"<color={(Behaviours.AirJump.instance.modEnabled ? string.Format("#{0}>[Enabled]", highlightColour) : "white>[Disabled]")}</color>"));
-                str.AppendLine(selectionHandler.GetIndicatedText(1, $"Material: <color=#{highlightColour}>{matNames[Behaviours.AirJump.instance.currentMaterialIndex]}</color>"));
-                str.AppendLine(selectionHandler.GetIndicatedText(2, $"Size: <color=#{highlightColour}>{sizeNames[Behaviours.AirJump.instance.currentSizeIndex]}</color>"));
-                //Not tested
-                str.AppendLine(selectionHandler.GetIndicatedText(0, $"Other collisions: <color={(Behaviours.AirJump.instance.otherCollisions ? string.Format("#{0}>[Enabled]", highlightColour) : "white>[Disabled]")}</color>"));
-
-                if (!Behaviours.AirJump.instance.isInModdedRoom)
+                if (Behaviours.VersionVerifier.instance.validVersion)
                 {
-                    str.AppendLines(2);
-                    str.AppendClr("Please join a modded room!", "A01515").EndColor().AppendLine();
+                    str.AppendLine(selectionHandler.GetIndicatedText(0, $"<color={(Behaviours.AirJump.instance.modEnabled ? string.Format("#{0}>[Enabled]", highlightColour) : "white>[Disabled]")}</color>"));
+                    str.AppendLine(selectionHandler.GetIndicatedText(1, $"Material: <color=#{highlightColour}>{matNames[Behaviours.AirJump.instance.settings.matIndex]}</color>"));
+                    str.AppendLine(selectionHandler.GetIndicatedText(2, $"Size: <color=#{highlightColour}>{sizeNames[Behaviours.AirJump.instance.settings.sizeIndex]}</color>"));
+                    //Not tested
+                    str.AppendLine(selectionHandler.GetIndicatedText(3, $"Other collisions: <color={(Behaviours.AirJump.instance.settings.otherCollisions ? string.Format("#{0}>[Enabled]", highlightColour) : "white>[Disabled]")}</color>"));
+
+                    if (!Behaviours.AirJump.instance.isInModdedRoom)
+                    {
+                        str.AppendLines(2);
+                        str.AppendClr("Please join a modded room!", "A01515").EndColor().AppendLine();
+                    }
+                }
+                else
+                {
+                    str.AppendClr($"Old version detected!\nPlease update to {Behaviours.VersionVerifier.instance.newestVersion}", "A01515").EndColor().AppendLine();
                 }
             });
         }
@@ -80,7 +89,7 @@ namespace AirJump.ComputerInterface
 
                 }
             }
-            catch (Exception e) { Console.WriteLine(e); }
+            catch (Exception e) { AJLog.Log(e.ToString()); }
         }
 
         private void OnEntryAdjusted(int index, bool increase)
@@ -91,22 +100,22 @@ namespace AirJump.ComputerInterface
                 switch (index)
                 {
                     case 1:
-                        if (Behaviours.AirJump.instance.currentMaterialIndex == 4 && increase)
+                        if (Behaviours.AirJump.instance.settings.matIndex == 5 && increase)
                             return;
 
-                        Behaviours.AirJump.instance.UpdateMat(Behaviours.AirJump.instance.currentMaterialIndex + offset);
+                        Behaviours.AirJump.instance.UpdateMat(Behaviours.AirJump.instance.settings.matIndex + offset);
                         UpdateScreen();
                         break;
                     case 2:
-                        if (Behaviours.AirJump.instance.currentSizeIndex == 2 && increase)
+                        if (Behaviours.AirJump.instance.settings.sizeIndex == 2 && increase)
                             return;
 
-                        Behaviours.AirJump.instance.UpdateSize(Behaviours.AirJump.instance.currentSizeIndex + offset);
+                        Behaviours.AirJump.instance.UpdateSize(Behaviours.AirJump.instance.settings.sizeIndex + offset);
                         UpdateScreen();
                         break;
                 }
             }
-            catch (Exception e) { Console.WriteLine(e); }
+            catch (Exception e) { AJLog.Log(e.ToString()); }
         }
 
         public override void OnKeyPressed(EKeyboardKey key)
