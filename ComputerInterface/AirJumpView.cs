@@ -16,7 +16,7 @@ namespace AirJump.ComputerInterface
         //public int mat;
         //public int size;
 
-        string[] matNames = new string[] { "Normal", "Fur", "Lava", "Rock", "Ice", "Monke" };
+        string[] matNames = new string[] { "Normal", "Fur", "Lava", "Rock", "Ice", "Custom" };
         string[] sizeNames = new string[] { "Normal", "Bigger", "Chonk" };
 
         public AirJumpView()
@@ -53,7 +53,7 @@ namespace AirJump.ComputerInterface
 
                 if (Behaviours.VersionVerifier.instance.validVersion)
                 {
-                    str.AppendLine(selectionHandler.GetIndicatedText(0, $"<color={(Behaviours.AirJump.instance.modEnabled ? string.Format("#{0}>[Enabled]", highlightColour) : "white>[Disabled]")}</color>"));
+                    str.AppendLine(selectionHandler.GetIndicatedText(0, $"<color={(Behaviours.AirJump.instance.settings.enabled ? string.Format("#{0}>[Enabled]", highlightColour) : "white>[Disabled]")}</color>"));
                     str.AppendLine(selectionHandler.GetIndicatedText(1, $"Material: <color=#{highlightColour}>{matNames[Behaviours.AirJump.instance.settings.matIndex]}</color>"));
                     str.AppendLine(selectionHandler.GetIndicatedText(2, $"Size: <color=#{highlightColour}>{sizeNames[Behaviours.AirJump.instance.settings.sizeIndex]}</color>"));
                     //Not tested
@@ -79,7 +79,7 @@ namespace AirJump.ComputerInterface
                 switch (index)
                 {
                     case 0:
-                        Behaviours.AirJump.instance.UpdateEnabled();
+                        Behaviours.AirJump.instance.UpdateEnabled(!Behaviours.AirJump.instance.settings.enabled);
                         UpdateScreen();
                         break;
                     case 3:
