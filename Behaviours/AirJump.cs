@@ -351,7 +351,8 @@ namespace AirJump.Behaviours
                     obj.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
                     break;
                 case 5:
-                    obj.GetComponent<Renderer>().material = GorillaGameManager.instance.FindVRRigForPlayer(player).GetComponent<VRRig>().mainSkin.material;
+                    //obj.GetComponent<Renderer>().material = GorillaGameManager.instance.FindVRRigForPlayer(player).GetComponent<VRRig>().mainSkin.material;
+                    obj.GetComponent<Renderer>().material = customMaterial;
                     break;
                 default:
                     obj.GetComponent<Renderer>().material = materials[matIndex];
