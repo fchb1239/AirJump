@@ -14,6 +14,7 @@ using ExitGames.Client.Photon;
 
 using AirJump.Logging;
 using AirJump.Data;
+using AirJump.Helpers;
 
 namespace AirJump.Behaviours
 {
@@ -21,10 +22,11 @@ namespace AirJump.Behaviours
     {
         public static AirJump instance;
 
-        private string fileLocation = string.Format("{0}/SaveData", Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-        private SaveData saveData;
+        private string fileLocation = string.Format("{0}\\SaveData", Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+        private string folderLocation = string.Format("{0}\\", Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
-        public bool modEnabled = false;
+        private Material customMaterial = new Material(Shader.Find("Standard"));
+
         public bool isInModdedRoom = false;
         private bool isLeftPressed = false;
         private bool isRightPressed = false;
@@ -52,6 +54,15 @@ namespace AirJump.Behaviours
         {
             instance = this;
 
+            try
+            {
+                customMaterial.mainTexture = AirJumpImageLoader.LoadImage($"{folderLocation}\\Custom.png", FilterMode.Point, 465, 1260);
+            }
+            catch (Exception e)
+            {
+                AJLog.Log("Failed to load custom texture: " + e.ToString());
+            }
+
             //Not tseted but should work better
             AJLog.Log("Setting mats");
             //materials[2] = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[2];
@@ -77,28 +88,16 @@ namespace AirJump.Behaviours
             {
                 if (File.Exists(fileLocation))
                 {
-                    saveData = JsonUtility.FromJson<SaveData>(File.ReadAllText(fileLocation));
-                    modEnabled = saveData.enabled;
-                    UpdateSize(saveData.sizeIndex);
-                    UpdateMat(saveData.matIndex);
-                    settings.otherCollisions = saveData.otherCollisions;
+                    settings = JsonUtility.FromJson<Settings>(File.ReadAllText(fileLocation));
+                    UpdateSize(settings.sizeIndex);
+                    UpdateMat(settings.matIndex);
                 }
                 else
-                {
-                    saveData.enabled = modEnabled;
-                    saveData.sizeIndex = settings.sizeIndex;
-                    saveData.matIndex = settings.matIndex;
-                    saveData.otherCollisions = settings.otherCollisions;
-                    Plugin.instance.enabled = modEnabled;
-                }
+                    settings.enabled = true;
             }
             catch
             {
-                modEnabled = saveData.enabled;
-                UpdateSize(saveData.sizeIndex);
-                UpdateMat(saveData.matIndex);
-                settings.otherCollisions = saveData.otherCollisions;
-                Plugin.instance.enabled = modEnabled;
+                settings.enabled = true;
             }
 
             PhotonNetwork.NetworkingClient.EventReceived += NetworkJump;
@@ -106,7 +105,7 @@ namespace AirJump.Behaviours
 
         void Update()
         {
-            if (modEnabled && isInModdedRoom && VersionVerifier.instance.validVersion)
+            if (settings.enabled && isInModdedRoom && VersionVerifier.instance.validVersion)
             {
                 InputDevices.GetDeviceAtXRNode(leftHandNode).TryGetFeatureValue(CommonUsages.gripButton, out isLeftPressed);
                 InputDevices.GetDeviceAtXRNode(rightHandNode).TryGetFeatureValue(CommonUsages.gripButton, out isRightPressed);
@@ -176,31 +175,27 @@ namespace AirJump.Behaviours
                 GameObject.Destroy(obj);
         }
 
-        public void UpdateEnabled()
+        public void UpdateEnabled(bool enable)
         {
-            modEnabled = !modEnabled;
-            if (!modEnabled)
+            settings.enabled = enable;
+            if (!settings.enabled)
             {
                 leftJump.transform.position = new Vector3(0, -999, 0);
                 rightJump.transform.position = new Vector3(0, -999, 0);
             }
 
-            Plugin.instance.enabled = modEnabled;
-
-            saveData.enabled = modEnabled;
-            File.WriteAllText(fileLocation, JsonUtility.ToJson(saveData));
+            File.WriteAllText(fileLocation, JsonUtility.ToJson(settings));
         }
 
         public void UpdateCollisions()
         {
             settings.otherCollisions = !settings.otherCollisions;
-            saveData.otherCollisions = settings.otherCollisions;
-            File.WriteAllText(fileLocation, JsonUtility.ToJson(saveData));
+            File.WriteAllText(fileLocation, JsonUtility.ToJson(settings));
 
             foreach (GameObject obj in leftJumpNetwork.Values)
-                obj.GetComponent<BoxCollider>().enabled = true;
+                obj.GetComponent<BoxCollider>().enabled = settings.otherCollisions;
             foreach (GameObject obj in rightJumpNetwork.Values)
-                obj.GetComponent<BoxCollider>().enabled = true;
+                obj.GetComponent<BoxCollider>().enabled = settings.otherCollisions;
         }
 
 
@@ -217,8 +212,8 @@ namespace AirJump.Behaviours
                 PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.UpdateJump, sizeData, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
             }
 
-            saveData.sizeIndex = index;
-            File.WriteAllText(fileLocation, JsonUtility.ToJson(saveData));
+            settings.sizeIndex = index;
+            File.WriteAllText(fileLocation, JsonUtility.ToJson(settings));
         }
 
         public void UpdateMat(int index)
@@ -226,18 +221,13 @@ namespace AirJump.Behaviours
             switch (index)
             {
                 case 0:
+                    // Color!! Americans, am I right? xD
                     leftJump.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
                     rightJump.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
                     break;
                 case 5:
-                    foreach (VRRig vrrig in GorillaParent.instance.vrrigs)
-                    {
-                        if (vrrig.isMyPlayer)
-                        {
-                            leftJump.GetComponent<Renderer>().material = vrrig.mainSkin.material;
-                            rightJump.GetComponent<Renderer>().material = vrrig.mainSkin.material;
-                        }
-                    }
+                    leftJump.GetComponent<Renderer>().material = customMaterial;
+                    rightJump.GetComponent<Renderer>().material = customMaterial;
                     break;
                 default:
                     leftJump.GetComponent<Renderer>().material = materials[index];
@@ -253,8 +243,8 @@ namespace AirJump.Behaviours
                 PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.UpdateJump, matData, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
             }
 
-            saveData.matIndex = index;
-            File.WriteAllText(fileLocation, JsonUtility.ToJson(saveData));
+            settings.matIndex = index;
+            File.WriteAllText(fileLocation, JsonUtility.ToJson(settings));
         }
 
         void NetworkJump(EventData eventData)
@@ -297,7 +287,7 @@ namespace AirJump.Behaviours
                                         rightJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].GetComponent<Renderer>().material.SetColor("_Color", Color.black);
                                         break;
                                     case 5:
-                                        rightJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].GetComponent<Renderer>().material = GorillaGameManager.instance.FindVRRigForPlayer(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender)).GetComponent<VRRig>().mainSkin.material;
+                                        rightJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].GetComponent<Renderer>().material = customMaterial;
                                         break;
                                     default:
                                         rightJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].GetComponent<Renderer>().material = materials[(int)data[1]];
@@ -312,7 +302,7 @@ namespace AirJump.Behaviours
                                         leftJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].GetComponent<Renderer>().material.SetColor("_Color", Color.black);
                                         break;
                                     case 5:
-                                        leftJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].GetComponent<Renderer>().material = GorillaGameManager.instance.FindVRRigForPlayer(PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender)).GetComponent<VRRig>().mainSkin.material;
+                                        leftJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].GetComponent<Renderer>().material = customMaterial;
                                         break;
                                     default:
                                         leftJumpNetwork[PhotonNetwork.CurrentRoom.GetPlayer(eventData.Sender).UserId].GetComponent<Renderer>().material = materials[(int)data[1]];
@@ -329,7 +319,7 @@ namespace AirJump.Behaviours
                         }
                         break;
                     default:
-                        //just incase
+                        //just in case
                         break;
                 }
             }
