@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using BepInEx;
 using Bepinject;
 using System.Reflection;
@@ -27,7 +27,7 @@ namespace AirJump
         {
             try
             { 
-                Behaviours.AirJump.instance.UpdateEnabled();
+                Behaviours.AirJump.instance.UpdateEnabled(true);
                 ComputerInterface.AirJumpView.instance.UpdateScreen();
             }
             catch { }
@@ -37,7 +37,7 @@ namespace AirJump
         {
             try
             {
-                Behaviours.AirJump.instance.UpdateEnabled();
+                Behaviours.AirJump.instance.UpdateEnabled(false);
                 ComputerInterface.AirJumpView.instance.UpdateScreen();
             }
             catch { }
