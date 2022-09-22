@@ -1,5 +1,5 @@
 # AirJump
-STOP STEALING MY CODE >:(
+This product is not affiliated with Gorilla Tag or Another Axiom LLC and is not endorsed or otherwise sponsored by Another Axiom LLC. Portions of the materials contained herein are property of Another Axiom LLC. ©2021 Another Axiom LLC.
 
 The mod that lets you spawn tiles underneeth your hands.
 * [PC Download](https://github.com/fchb1239/AirJump/releases/tag/1.0.2)
