@@ -5,18 +5,19 @@ using ComputerInterface.ViewLib;
 
 using AirJump.Logging;
 
-namespace AirJump.ComputerInterface
+namespace AirJump.CI
 {
     class AirJumpView : ComputerView
     {
         public static AirJumpView instance;
         private readonly UISelectionHandler selectionHandler;
-        const string highlightColour = "336BFF";
+        public const string highlightColour = "336BFF";
         //public bool modEnabled;
         //public int mat;
         //public int size;
 
-        string[] matNames = new string[] { "Normal", "Fur", "Lava", "Rock", "Ice", "Custom" };
+        //string[] matNames = new string[] { "Normal", "Fur", "Lava", "Rock", "Ice", "Custom" };
+        string[] matNames = new string[] { "Normal", "Fur", "Lava", "Rock", "Ice" };
         string[] sizeNames = new string[] { "Normal", "Bigger", "Chonk" };
 
         public AirJumpView()
@@ -51,7 +52,7 @@ namespace AirJump.ComputerInterface
                 str.MakeBar('-', SCREEN_WIDTH, 0, "ffffff10");
                 str.EndAlign().AppendLines(1);
 
-                if (Behaviours.VersionVerifier.instance.validVersion)
+                if (Behaviours.VersionVerifier.validVersion)
                 {
                     str.AppendLine(selectionHandler.GetIndicatedText(0, $"<color={(Behaviours.AirJump.instance.settings.enabled ? string.Format("#{0}>[Enabled]", highlightColour) : "white>[Disabled]")}</color>"));
                     str.AppendLine(selectionHandler.GetIndicatedText(1, $"Material: <color=#{highlightColour}>{matNames[Behaviours.AirJump.instance.settings.matIndex]}</color>"));
@@ -67,7 +68,17 @@ namespace AirJump.ComputerInterface
                 }
                 else
                 {
-                    str.AppendClr($"Old version detected!\nPlease update to {Behaviours.VersionVerifier.instance.newestVersion}", "A01515").EndColor().AppendLine();
+                    str.AppendClr($"Old version detected! Please update!", "A01515").EndColor().AppendLine();
+                    str.AppendClr($"Your version: {PluginInfo.Version}", "A01515").EndColor().AppendLine();
+                    str.AppendClr($"Newest version: {Behaviours.VersionVerifier.newestVersion}", "A01515").EndColor().AppendLine();
+                    str.AppendLine("");
+                    str.AppendLine("");
+                    str.AppendLine("");
+                    str.AppendLine("");
+                    str.AppendLine("The download link has been opened in your browser.");
+
+                    AJLog.Log("Opening browser");
+                    System.Diagnostics.Process.Start("https://github.com/fchb1239/AirJump/releases");
                 }
             });
         }
