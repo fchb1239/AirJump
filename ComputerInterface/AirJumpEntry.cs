@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using ComputerInterface.Interfaces;
 
-namespace AirJump.ComputerInterface
+namespace AirJump.CI
 {
     class AirJumpEntry : IComputerModEntry
     {
-        public string EntryName => "AirJump";
+        public string EntryName => $"Air<color=#{AirJumpView.highlightColour}>Jump</color>";
 
         // This is the first view that is going to be shown if the user select you mod
         // The Computer Interface mod will instantiate your view 
