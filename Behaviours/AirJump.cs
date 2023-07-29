@@ -1,8 +1,6 @@
 using System;
 using System.IO;
-using System.Text;
 using System.Reflection;
-using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -14,32 +12,20 @@ using ExitGames.Client.Photon;
 
 using AirJump.Logging;
 using AirJump.Data;
-//using AirJump.Helpers;
 
 namespace AirJump.Behaviours
 {
     class AirJump : MonoBehaviour
     {
         public static AirJump instance;
-
-        private string fileLocation = string.Format("{0}\\SaveData", Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-        private string folderLocation = string.Format("{0}\\", Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-
-        //private Material customMaterial = new Material(Shader.Find("Standard"));
+        private string fileLocation = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "SaveData");
 
         public bool isInModdedRoom = false;
-        private bool isLeftPressed = false;
-        private bool isRightPressed = false;
-
-        private bool onceRight = false;
-        private bool onceLeft = false;
+        private bool onceRight = false, onceLeft = false;
 
         public Settings settings = new Settings();
 
-        private GorillaLocomotion.Player player = GorillaLocomotion.Player.Instance;
-
-        private GameObject leftJump;
-        private GameObject rightJump;
+        private GameObject leftJump, rightJump;
 
         private Dictionary<string, GameObject> leftJumpNetwork = new Dictionary<string, GameObject>();
         private Dictionary<string, GameObject> rightJumpNetwork = new Dictionary<string, GameObject>();
@@ -48,54 +34,29 @@ namespace AirJump.Behaviours
         private XRNode rightHandNode = XRNode.RightHand;
 
         private Vector3[] sizes = new Vector3[] { new Vector3(0.0125f, 0.28f, 0.3825f), new Vector3(0.0125f, 0.42f, 0.57375f), new Vector3(0.0125f, 0.56f, 0.765f) };
-        private Material[] materials = new Material[] { null, null, null, null, null, null };
+        private Material[] materials = new Material[6];
 
         void Awake()
         {
             instance = this;
-
             try
             {
-                //customMaterial.mainTexture = AirJumpImageLoader.LoadImage($"{folderLocation}\\Custom.png", FilterMode.Point, 465, 1260);
-            }
-            catch (Exception e)
-            {
-                AJLog.Log("Failed to load custom texture: " + e.ToString());
-            }
-
-            //Not tseted but should work better
-            AJLog.Log("Setting mats");
-            //materials[2] = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[2];
-            //materials[3] = GorillaTagger.Instance.offlineVRRig.materialsToChangeTo[1];
-
-            
-            foreach (VRRig rig in FindObjectsOfType<VRRig>())
-            {
-                if (rig.isOfflineVRRig)
+                AJLog.Log("Setting mats");
+                foreach (VRRig rig in FindObjectsOfType<VRRig>())
                 {
-                    materials[1] = rig.materialsToChangeTo[0];
-                    materials[2] = rig.materialsToChangeTo[2];
-                    materials[3] = rig.materialsToChangeTo[1];
-                    materials[4] = rig.materialsToChangeTo[3];
+                    if (rig.isOfflineVRRig)
+                    {
+                        for (int i = 1; i <= 4; i++)
+                            materials[i] = rig.materialsToChangeTo[i-1];
+                    }
                 }
-            }
-            
 
-            AJLog.Log("Creating jumps");
-            leftJump = CreateJump();
-            rightJump = CreateJump();
+                AJLog.Log("Creating jumps");
+                leftJump = CreateJump();
+                rightJump = CreateJump();
 
-            AJLog.Log("Doing file thing");
-            try
-            {
-                if (File.Exists(fileLocation))
-                {
-                    settings = JsonUtility.FromJson<Settings>(File.ReadAllText(fileLocation));
-                    UpdateSize(settings.sizeIndex);
-                    UpdateMat(settings.matIndex);
-                }
-                else
-                    settings.enabled = true;
+                AJLog.Log("Loading settings");
+                LoadSettings();
             }
             catch
             {
@@ -107,84 +68,56 @@ namespace AirJump.Behaviours
         {
             if (settings.enabled && isInModdedRoom && VersionVerifier.validVersion)
             {
-                InputDevices.GetDeviceAtXRNode(leftHandNode).TryGetFeatureValue(CommonUsages.gripButton, out isLeftPressed);
-                InputDevices.GetDeviceAtXRNode(rightHandNode).TryGetFeatureValue(CommonUsages.gripButton, out isRightPressed);
+                ProcessJump(leftHandNode, ref onceLeft, leftJump);
+                ProcessJump(rightHandNode, ref onceRight, rightJump);
+            }
+        }
 
-                if (isLeftPressed)
+        private VRRig FindPlayerRig()
+        {
+            VRRig vrRig = FindObjectOfType<VRRig>();
+
+            foreach (VRRig rig in FindObjectsOfType<VRRig>())
+            {
+                if (rig.isMyPlayer)
+                    vrRig = rig;
+            }
+
+            return vrRig;
+        }
+
+        private void ProcessJump(XRNode handNode, ref bool once, GameObject jump)
+        {
+            InputDevices.GetDeviceAtXRNode(handNode).TryGetFeatureValue(CommonUsages.gripButton, out bool isPressed);
+
+            if (isPressed)
+            {
+                if (!once)
                 {
-                    if (!onceLeft)
-                    {
-                        VRRig vrRig = FindObjectOfType<VRRig>();
+                    VRRig vrRig = FindPlayerRig();
 
-                        foreach (VRRig rig in FindObjectsOfType<VRRig>())
-                        {
-                            if (rig.isMyPlayer)
-                                vrRig = rig;
-                        }
+                    jump.transform.parent = vrRig.transform;
+                    jump.transform.localScale = sizes[settings.sizeIndex];
+                    jump.transform.parent = null;
 
-                        leftJump.transform.parent = vrRig.transform;
-                        leftJump.transform.localScale = sizes[settings.sizeIndex];
-                        leftJump.transform.parent = null;
+                    jump.transform.position = vrRig.leftControllerTransform.position + (Vector3.down * 0.05f) * vrRig.scaleFactor;
+                    jump.transform.rotation = vrRig.leftControllerTransform.rotation;
 
-                        leftJump.transform.position = player.leftControllerTransform.position + (Vector3.down * 0.05f) * vrRig.scaleFactor;
-                        //leftJump.transform.rotation = Quaternion.Euler(0, -45, 0) * player.leftHandTransform.rotation;
-                        leftJump.transform.rotation = player.leftControllerTransform.rotation;
+                    object[] jumpData = new object[] { jump.transform.position, jump.transform.rotation, settings.sizeIndex, settings.matIndex };
+                    PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.LeftJump, jumpData, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
 
-                        object[] leftJumpData = new object[] { leftJump.transform.position, leftJump.transform.rotation, settings.sizeIndex, settings.matIndex };
-                        PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.LeftJump, leftJumpData, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
-
-                        onceLeft = true;
-                    }
+                    once = true;
                 }
-                else
+            }
+            else
+            {
+                if (once)
                 {
-                    if (onceLeft)
-                    {
-                        leftJump.transform.position = new Vector3(0, -999, 0);
+                    jump.transform.position = new Vector3(0, -999, 0);
 
-                        PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.LeftJumpDeletion, null, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
+                    PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.LeftJumpDeletion, null, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
 
-                        onceLeft = false;
-                    }
-                }
-
-                if (isRightPressed)
-                {
-                    if (!onceRight)
-                    {
-                        VRRig vrRig = FindObjectOfType<VRRig>();
-
-                        foreach (VRRig rig in FindObjectsOfType<VRRig>())
-                        {
-                            if (rig.isMyPlayer)
-                                vrRig = rig;
-                        }
-
-                        rightJump.transform.parent = vrRig.transform;
-                        rightJump.transform.localScale = sizes[settings.sizeIndex];
-                        rightJump.transform.parent = null;
-
-                        //rightJump.transform.position = new Vector3(0, (float)-0.0075, 0) + player.rightHandTransform.position;
-                        rightJump.transform.position = player.rightControllerTransform.position + (new Vector3(0, (float)-0.0075, 0) + Vector3.down * 0.05f) * vrRig.scaleFactor;
-                        //rightJump.transform.rotation = Quaternion.Euler(0, 45, 0) * player.rightHandTransform.rotation;
-                        rightJump.transform.rotation = player.rightControllerTransform.rotation;
-
-                        object[] rightJumpData = new object[] { rightJump.transform.position, rightJump.transform.rotation, settings.sizeIndex, settings.matIndex };
-                        PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.RightJump, rightJumpData, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
-
-                        onceRight = true;
-                    }
-                }
-                else
-                {
-                    if (onceRight)
-                    {
-                        rightJump.transform.position = new Vector3(0, -999, 0);
-
-                        PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.RightJumpDeletion, null, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
-
-                        onceRight = false;
-                    }
+                    once = false;
                 }
             }
         }
@@ -198,12 +131,23 @@ namespace AirJump.Behaviours
         {
             PhotonNetwork.NetworkingClient.EventReceived -= NetworkJump;
 
-            leftJump.transform.position = new Vector3(0, -999, 0);
-            rightJump.transform.position = new Vector3(0, -999, 0);
-            foreach (GameObject obj in leftJumpNetwork.Values)
-                GameObject.Destroy(obj);
-            foreach (GameObject obj in rightJumpNetwork.Values)
-                GameObject.Destroy(obj);
+            ResetJump(leftJump);
+            ResetJump(rightJump);
+
+            DestroyAll(leftJumpNetwork);
+            DestroyAll(rightJumpNetwork);
+        }
+
+        private void ResetJump(GameObject jump)
+        {
+            jump.transform.position = new Vector3(0, -999, 0);
+        }
+
+        private void DestroyAll(Dictionary<string, GameObject> jumpNetwork)
+        {
+            foreach (GameObject obj in jumpNetwork.Values)
+                Destroy(obj);
+            jumpNetwork.Clear();
         }
 
         public void UpdateEnabled(bool enable)
@@ -211,12 +155,10 @@ namespace AirJump.Behaviours
             settings.enabled = enable;
             if (!settings.enabled)
             {
-                leftJump.transform.position = new Vector3(0, -999, 0);
-                rightJump.transform.position = new Vector3(0, -999, 0);
+                ResetJump(leftJump);
+                ResetJump(rightJump);
             }
-
             Plugin.instance.enabled = enable;
-
             SaveSettings();
         }
 
@@ -231,7 +173,6 @@ namespace AirJump.Behaviours
                 obj.GetComponent<BoxCollider>().enabled = settings.otherCollisions;
         }
 
-
         public void UpdateSize(int index)
         {
             leftJump.transform.localScale = sizes[index];
@@ -239,7 +180,7 @@ namespace AirJump.Behaviours
 
             settings.sizeIndex = index;
 
-            if (isRightPressed || isLeftPressed)
+            if (onceRight || onceLeft)
             {
                 object[] sizeData = new object[] { false, index };
                 PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.UpdateJump, sizeData, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
@@ -251,37 +192,37 @@ namespace AirJump.Behaviours
 
         public void UpdateMat(int index)
         {
-            switch (index)
-            {
-                case 0:
-                    // Color!! Americans, am I right? xD
-                    leftJump.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
-                    rightJump.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
-                    break;
-                case 5:
-                    //leftJump.GetComponent<Renderer>().material = customMaterial;
-                    //rightJump.GetComponent<Renderer>().material = customMaterial;
-                    break;
-                default:
-                    leftJump.GetComponent<Renderer>().material = materials[index];
-                    rightJump.GetComponent<Renderer>().material = materials[index];
-                    break;
-            }
+            ApplyMaterial(leftJump, index);
+            ApplyMaterial(rightJump, index);
 
             settings.matIndex = index;
 
-            AssignSurfaceOverride(leftJump, index);
-            AssignSurfaceOverride(rightJump, index);
-
-            if (isRightPressed || isLeftPressed)
+            if (onceRight || onceLeft)
             {
                 object[] matData = new object[] { true, index };
                 PhotonNetwork.RaiseEvent((byte)PhotonEventCodes.UpdateJump, matData, new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
             }
 
             settings.matIndex = index;
-
             SaveSettings();
+        }
+
+        private void ApplyMaterial(GameObject jump, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    jump.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
+                    break;
+                case 5:
+                    //jump.GetComponent<Renderer>().material = customMaterial;
+                    break;
+                default:
+                    jump.GetComponent<Renderer>().material = materials[index];
+                    break;
+            }
+
+            AssignSurfaceOverride(jump, index);
         }
 
         public void AssignSurfaceOverride(GameObject jump, int index)
@@ -312,6 +253,18 @@ namespace AirJump.Behaviours
         public void SaveSettings()
         {
             File.WriteAllText(fileLocation, JsonUtility.ToJson(settings));
+        }
+
+        public void LoadSettings()
+        {
+            if (File.Exists(fileLocation))
+            {
+                settings = JsonUtility.FromJson<Settings>(File.ReadAllText(fileLocation));
+                UpdateSize(settings.sizeIndex);
+                UpdateMat(settings.matIndex);
+            }
+            else
+                settings.enabled = true;
         }
 
         void NetworkJump(EventData eventData)
@@ -423,19 +376,7 @@ namespace AirJump.Behaviours
             if (!otherCol)
                 obj.GetComponent<BoxCollider>().enabled = false;
 
-            switch (matIndex)
-            {
-                case 0:
-                    obj.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
-                    break;
-                case 5:
-                    //obj.GetComponent<Renderer>().material = GorillaGameManager.instance.FindVRRigForPlayer(player).GetComponent<VRRig>().mainSkin.material;
-                    //obj.GetComponent<Renderer>().material = customMaterial;
-                    break;
-                default:
-                    obj.GetComponent<Renderer>().material = materials[matIndex];
-                    break;
-            }
+            ApplyMaterial(obj, matIndex);
 
             return obj;
         }
