@@ -22,22 +22,21 @@ namespace AirJump
             Zenjector.Install<ComputerInterface.MainInstaller>().OnProject();
         }
 
-
         void OnEnable()
         {
-            try
-            { 
-                Behaviours.AirJump.instance.UpdateEnabled(true);
-                ComputerInterface.AirJumpView.instance.UpdateScreen();
-            }
-            catch { }
+            UpdateFeatureAndScreen(true);
         }
 
         void OnDisable()
         {
+            UpdateFeatureAndScreen(false);
+        }
+
+        private void UpdateFeatureAndScreen(bool enabled)
+        {
             try
-            {
-                Behaviours.AirJump.instance.UpdateEnabled(false);
+            { 
+                Behaviours.AirJump.instance.UpdateEnabled(enabled);
                 ComputerInterface.AirJumpView.instance.UpdateScreen();
             }
             catch { }
@@ -47,9 +46,7 @@ namespace AirJump
         void JoinModded()
         {
             Behaviours.AirJump.instance.isInModdedRoom = true;
-
-            if (ComputerInterface.AirJumpView.instance != null)
-                ComputerInterface.AirJumpView.instance.UpdateScreen();
+            UpdateScreen();
         }
 
         [ModdedGamemodeLeave]
@@ -57,7 +54,11 @@ namespace AirJump
         {
             Behaviours.AirJump.instance.isInModdedRoom = false;
             Behaviours.AirJump.instance.LeaveModded();
+            UpdateScreen();
+        }
 
+        private void UpdateScreen()
+        {
             if (ComputerInterface.AirJumpView.instance != null)
                 ComputerInterface.AirJumpView.instance.UpdateScreen();
         }
