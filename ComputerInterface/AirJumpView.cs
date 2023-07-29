@@ -11,33 +11,24 @@ namespace AirJump.CI
     {
         public static AirJumpView instance;
         private readonly UISelectionHandler selectionHandler;
-        public const string highlightColour = "336BFF";
-        //public bool modEnabled;
-        //public int mat;
-        //public int size;
-
-        //string[] matNames = new string[] { "Normal", "Fur", "Lava", "Rock", "Ice", "Custom" };
-        string[] matNames = new string[] { "Normal", "Fur", "Lava", "Rock", "Ice" };
-        string[] sizeNames = new string[] { "Normal", "Bigger", "Chonk" };
+        private const string highlightColour = "336BFF";
+        private const int maxIndex = 3;
+        private readonly string[] matNames = { "Normal", "Fur", "Lava", "Rock", "Ice" };
+        private readonly string[] sizeNames = { "Normal", "Bigger", "Chonk" };
 
         public AirJumpView()
         {
             instance = this;
 
             selectionHandler = new UISelectionHandler(EKeyboardKey.Up, EKeyboardKey.Down, EKeyboardKey.Enter);
-
-            selectionHandler.MaxIdx = 3;
-
+            selectionHandler.MaxIdx = maxIndex;
             selectionHandler.OnSelected += OnEntrySelected;
-
             selectionHandler.ConfigureSelectionIndicator($"<color=#{highlightColour}>></color> ", "", "  ", "");
         }
 
         public override void OnShow(object[] args)
         {
             base.OnShow(args);
-            // changing the Text property will fire an PropertyChanged event
-            // which lets the computer know the text has changed and update it
             UpdateScreen();
         }
 
@@ -57,7 +48,6 @@ namespace AirJump.CI
                     str.AppendLine(selectionHandler.GetIndicatedText(0, $"<color={(Behaviours.AirJump.instance.settings.enabled ? string.Format("#{0}>[Enabled]", highlightColour) : "white>[Disabled]")}</color>"));
                     str.AppendLine(selectionHandler.GetIndicatedText(1, $"Material: <color=#{highlightColour}>{matNames[Behaviours.AirJump.instance.settings.matIndex]}</color>"));
                     str.AppendLine(selectionHandler.GetIndicatedText(2, $"Size: <color=#{highlightColour}>{sizeNames[Behaviours.AirJump.instance.settings.sizeIndex]}</color>"));
-                    //Not tested
                     str.AppendLine(selectionHandler.GetIndicatedText(3, $"Other collisions: <color={(Behaviours.AirJump.instance.settings.otherCollisions ? string.Format("#{0}>[Enabled]", highlightColour) : "white>[Disabled]")}</color>"));
 
                     if (!Behaviours.AirJump.instance.isInModdedRoom)
@@ -91,14 +81,12 @@ namespace AirJump.CI
                 {
                     case 0:
                         Behaviours.AirJump.instance.UpdateEnabled(!Behaviours.AirJump.instance.settings.enabled);
-                        UpdateScreen();
                         break;
                     case 3:
                         Behaviours.AirJump.instance.UpdateCollisions();
-                        UpdateScreen();
                         break;
-
                 }
+                UpdateScreen();
             }
             catch (Exception e) { AJLog.Log(e.ToString()); }
         }
@@ -115,16 +103,15 @@ namespace AirJump.CI
                             return;
 
                         Behaviours.AirJump.instance.UpdateMat(Behaviours.AirJump.instance.settings.matIndex + offset);
-                        UpdateScreen();
                         break;
                     case 2:
                         if (Behaviours.AirJump.instance.settings.sizeIndex == 2 && increase)
                             return;
 
                         Behaviours.AirJump.instance.UpdateSize(Behaviours.AirJump.instance.settings.sizeIndex + offset);
-                        UpdateScreen();
                         break;
                 }
+                UpdateScreen();
             }
             catch (Exception e) { AJLog.Log(e.ToString()); }
         }
@@ -140,7 +127,6 @@ namespace AirJump.CI
             if (key == EKeyboardKey.Left || key == EKeyboardKey.Right)
             {
                 OnEntryAdjusted(selectionHandler.CurrentSelectionIndex, key == EKeyboardKey.Right);
-                UpdateScreen();
             }
 
             switch (key)

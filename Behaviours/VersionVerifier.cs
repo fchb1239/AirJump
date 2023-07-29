@@ -14,6 +14,8 @@ namespace AirJump.Behaviours
         public bool validVersion = false;
         public string newestVersion = "0.0.0";
 
+        private static readonly string versionCheckUrl = "https://raw.githubusercontent.com/fchb1239/AirJump/main/NewestVersion";
+
         private void Awake()
         {
             instance = this;
@@ -23,7 +25,7 @@ namespace AirJump.Behaviours
         private IEnumerator VerifyVersion()
         {
             AJLog.Log("Getting newest version");
-            var request = new UnityWebRequest($"https://raw.githubusercontent.com/fchb1239/AirJump/main/NewestVersion", "GET");
+            var request = new UnityWebRequest(versionCheckUrl, "GET");
             request.downloadHandler = new DownloadHandlerBuffer();
             yield return request.SendWebRequest();
             //Pretty sure github adds an \n after it for whatever reason
